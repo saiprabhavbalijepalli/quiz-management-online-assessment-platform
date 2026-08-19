@@ -22,7 +22,7 @@ function QuizPage() {
         setLoadingQuestions(true);
 
         const response = await fetch(
-          "http://localhost:5000/api/quizzes"
+          "https://quiz-management-backend-gje1.onrender.com/api/quizzes"
         );
 
         if (!response.ok) {
@@ -87,7 +87,7 @@ function QuizPage() {
       const timeTaken = 600 - timeLeft;
 
       const response = await fetch(
-        "http://localhost:5000/api/results/submit",
+        "https://quiz-management-backend-gje1.onrender.com/api/results/submit",
         {
           method: "POST",
 

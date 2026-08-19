@@ -17,7 +17,7 @@ function StudentDashboard() {
         setLoading(true);
 
         const quizResponse = await fetch(
-          "http://localhost:5000/api/quizzes"
+          "https://quiz-management-backend-gje1.onrender.com/api/quizzes"
         );
 
         if (!quizResponse.ok) {
@@ -29,7 +29,7 @@ function StudentDashboard() {
         setQuizzes(quizData);
 
         const resultResponse = await fetch(
-          "http://localhost:5000/api/results"
+          "https://quiz-management-backend-gje1.onrender.com/api/results"
         );
 
         if (!resultResponse.ok) {

@@ -23,7 +23,7 @@ function StudentLogin() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/student/login",
+        "https://quiz-management-backend-gje1.onrender.com/api/auth/student/login",
         {
           method: "POST",
           headers: {

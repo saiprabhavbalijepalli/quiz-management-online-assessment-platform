@@ -19,7 +19,7 @@ function AdminResults() {
         setError("");
 
         const response = await fetch(
-          "http://localhost:5000/api/results"
+          "http://quiz-management-backend-gje1.onrender.com/api/results"
         );
 
         if (!response.ok) {

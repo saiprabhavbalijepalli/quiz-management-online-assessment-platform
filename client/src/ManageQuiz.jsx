@@ -20,7 +20,7 @@ function ManageQuiz() {
     const loadQuestions = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/quizzes/${quizType}`
+          `https://quiz-management-backend-gje1.onrender.com/api/quizzes/${quizType}`
         );
 
         if (response.status === 404) {
@@ -47,7 +47,7 @@ function ManageQuiz() {
   const saveQuiz = async (updatedQuestions) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/quizzes",
+        "https://quiz-management-backend-gje1.onrender.com/api/quizzes",
         {
           method: "POST",
           headers: {
