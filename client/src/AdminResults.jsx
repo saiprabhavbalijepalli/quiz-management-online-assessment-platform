@@ -19,8 +19,8 @@ function AdminResults() {
         setError("");
 
         const response = await fetch(
-          "http://quiz-management-backend-gje1.onrender.com/api/results"
-        );
+        "https://quiz-management-backend-gje1.onrender.com/api/results"
+         );
 
         if (!response.ok) {
           throw new Error("Unable to load quiz results");
