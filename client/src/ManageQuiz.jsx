@@ -23,11 +23,16 @@ function ManageQuiz() {
           `http://localhost:5000/api/quizzes/${quizType}`
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to load quiz");
+        if (response.status === 404) {
+          setQuestions([]);
+          return;
         }
 
         const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to load quiz");
+        }
 
         setQuestions(data.questions || []);
       } catch (error) {
@@ -55,18 +60,33 @@ function ManageQuiz() {
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to save quiz");
+      let data;
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        console.error("Backend response:", data);
+
+        alert(
+          "Backend error: " +
+            (data.message || `Request failed with status ${response.status}`)
+        );
+
+        return false;
+      }
 
       setQuestions(data.questions || updatedQuestions);
 
       return true;
     } catch (error) {
-      console.error("Error saving quiz:", error);
-      alert("Unable to save quiz.");
+      console.error("Network/save error:", error);
+
+      alert("Network error: " + error.message);
+
       return false;
     }
   };
@@ -96,14 +116,21 @@ function ManageQuiz() {
       return;
     }
 
+    const options = [
+      option1.trim(),
+      option2.trim(),
+      option3.trim(),
+      option4.trim(),
+    ];
+
+    if (!options.includes(correctAnswer.trim())) {
+      alert("Correct answer must exactly match one of the four options.");
+      return;
+    }
+
     const newQuestion = {
       question: question.trim(),
-      options: [
-        option1.trim(),
-        option2.trim(),
-        option3.trim(),
-        option4.trim(),
-      ],
+      options: options,
       correctAnswer: correctAnswer.trim(),
     };
 
@@ -138,20 +165,24 @@ function ManageQuiz() {
 
     const success = await saveQuiz(updatedQuestions);
 
-    if (success && editIndex === index) {
-      clearForm();
+    if (success) {
+      if (editIndex === index) {
+        clearForm();
+      } else if (editIndex !== null && index < editIndex) {
+        setEditIndex(editIndex - 1);
+      }
     }
   };
 
   const editQuestion = (index) => {
     const selectedQuestion = questions[index];
 
-    setQuestion(selectedQuestion.question);
+    setQuestion(selectedQuestion.question || "");
 
-    setOption1(selectedQuestion.options[0] || "");
-    setOption2(selectedQuestion.options[1] || "");
-    setOption3(selectedQuestion.options[2] || "");
-    setOption4(selectedQuestion.options[3] || "");
+    setOption1(selectedQuestion.options?.[0] || "");
+    setOption2(selectedQuestion.options?.[1] || "");
+    setOption3(selectedQuestion.options?.[2] || "");
+    setOption4(selectedQuestion.options?.[3] || "");
 
     setCorrectAnswer(selectedQuestion.correctAnswer || "");
 
@@ -167,31 +198,22 @@ function ManageQuiz() {
     <div className="manage-page">
       <div className="manage-header">
         <div>
-          <h1>
-            Manage {quizType?.toUpperCase()} Quiz
-          </h1>
-
+          <h1>Manage {quizType?.toUpperCase()} Quiz</h1>
           <p>Add, edit and delete quiz questions</p>
         </div>
 
-        <button
-          onClick={() => navigate("/admin-dashboard")}
-        >
+        <button onClick={() => navigate("/admin-dashboard")}>
           Back to Dashboard
         </button>
       </div>
 
       <div className="manage-content">
-
         <div className="question-form">
           <h2>
-            {editIndex !== null
-              ? "Edit Question"
-              : "Add New Question"}
+            {editIndex !== null ? "Edit Question" : "Add New Question"}
           </h2>
 
           <form onSubmit={handleSubmit}>
-
             <label>Question</label>
             <input
               type="text"
@@ -237,33 +259,23 @@ function ManageQuiz() {
               type="text"
               placeholder="Enter correct answer"
               value={correctAnswer}
-              onChange={(e) =>
-                setCorrectAnswer(e.target.value)
-              }
+              onChange={(e) => setCorrectAnswer(e.target.value)}
             />
 
             <button type="submit">
-              {editIndex !== null
-                ? "Update Question"
-                : "Add Question"}
+              {editIndex !== null ? "Update Question" : "Add Question"}
             </button>
 
             {editIndex !== null && (
-              <button
-                type="button"
-                onClick={clearForm}
-              >
+              <button type="button" onClick={clearForm}>
                 Cancel Edit
               </button>
             )}
-
           </form>
         </div>
 
         <div className="questions-list">
-          <h2>
-            Questions ({questions.length})
-          </h2>
+          <h2>Questions ({questions.length})</h2>
 
           {questions.length === 0 ? (
             <p>No questions found.</p>
@@ -304,7 +316,6 @@ function ManageQuiz() {
             ))
           )}
         </div>
-
       </div>
     </div>
   );
